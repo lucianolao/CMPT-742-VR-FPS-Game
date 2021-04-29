@@ -1,0 +1,243 @@
+Create new 3D project
+
+Asses folder - create (C# scripting, scenes, etc.)
+
+GameObject(menu) - create, cube, plane
+Engine - reset
+Motion Vectors
+Coliders
+Cube - add component, rigidbody, use gravity, Is Kinematic
+Project - Script folder - create new script (Assets)
+Update - called in each frame
+Drag script to the object/scene (cube)
+	transform.Rotate(0.0f, 1.0f, 0.0f); // per frame (not consistent)
+	transform.Rotate(0.0f, Time.deltaTime * 10.0f, 0.0f); // 10 degree per second
+	transform.position = transform.position + new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"))
+
+	transform.position = transform.position + new Vector3(Input.GetAxis("Horizontal") * Time.deltaTime, 0.0f, Input.GetAxis("Vertical") * Time.deltaTime);
+
+// Capsule
+	transform.position = transform.position + transform.forward * Input.GetAxis("Vertical") * Time.deltaTime + transform.right * Input.GetAxis("Horizontal") * Time.deltaTime)
+
+// Cube
+Create folder
+Drag cube from scene to the folder
+Delete cube from scene
+	
+	public GameObject cubePrefab;
+	// void Start()
+	for (int i =0; i<5; i+1){
+		Instantiate(cubePrefab, new Vector3(Random.Range(-5.0f,5.0f), Random.Range(-5.0f,5.0f) + 10.0f, Random.Range(-5.0f,5.0f)), Quaternion.identity); // Quaternion rotation of 0 in x,y,z
+		Instantiate
+
+Create empty object
+
+New Folder - new material
+Capsule colider (remove) and use character control
+Can disable object with checklist at top
+
+Asset Store (able to find free assets to develop games in the future)
+
+VC Project
+Scenes folder - open sample scenes
+Material Albedo - search for material (like brick)
+Tiling x=5 replicates the texture 5 times
+Movel tool - click V (on keyboard) and attach on vertex from one object to the other object you want to attach to
+Use Canvas to show health (starting from 100)
+
+Character movement script
+
+Animator - layers (different layers for upper and lower body)
+Gonna use animator for the enemies
+Upper body mask
+
+Arrows have conditions
+
+GunVR.cs
+
+ReloadEvent
+	In "shooter pack", then swat@Reloading
+	Inspector - it has 2 events, when hand reaches the magazine (twice)
+	If no event -> addEvent, Function = ReloadEvent (first:int=1, second:int=2)
+	Appearing and disappearing
+
+	if (eventNumber == 1)
+		handMag.GetComponent<SkinnedMeshRenderer>().enabled = true;
+		gunMag.GetComponent<SkinnedMeshRenderer>().enabled = false;
+	
+	if (eventNumber == 2)
+		handMag.GetComponent<SkinnedMeshRenderer>().enabled = false;
+		gunMag.GetComponent<SkinnedMeshRenderer>().enabled = true;
+
+OVRInput
+Line 55
+if OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger) || Input.GetMouseButtonDown(0)) && gunShotime...
+	|| Input.GetMouseButtonDown(0)) // 0 means left click, 1 right click, 2 middle button
+
+Line 79
+	if ... OVRInput.Get(OVRInput.RawButton.Back) || Input.GetKey(KeyCode.R)) && ...
+	if R is not working: maybe replace to Input.GetMouse(1) // so reloads with right click
+
+
+	public GameObject shotSound;
+	public GameObject muzzlePrefab;
+
+Line 138~141
+	void addEffects() {
+		Destroy(Instantiate(shotSound, transform.position, transform.rotation), 2.0f); // object (sound) deleted after 2 seconds
+
+		GameObject tempMuzzle = Instantiate(muzzlePrefab, end.transform.position, end.transform.rotation); // end = end position of our gun
+		tempMuzzle.GetComponent<ParticleSystem>().Play();
+
+Prefabs folder -> bulletHole 
+		m4 sound to ShotSound of Player (GunVR)
+Effect Example - Weapons - Prefabs - drag MuzzleFlash to MuzzlePrefab of Player (GunVR)
+
+
+Scripting API - Physics.Raycast
+	public GameObject bulletHole;
+	drag bulletHole from prefabs to bulletHole of Player (GunVR)
+
+	void shotDetection() {
+		RaycastHit rayHit;
+		if (Physics.Raycast(end.transform.position, (end.transform.position - start.transform.position), out rayHit, 100.0f)) // start point, direction, range
+			if (rayHit.transform.tag == "enemy") {
+
+			else { // assume it's a wall instead
+				Instantiate(bulletHole, rayHit.point + rayHit.transform.up * 0.01f, rayHit.transform.rotation); // moving bullet 1cm away from wall
+
+copy player, name it enemy
+assets - shooter pack - get the colour red for enemy
+
+delete scripts and component
+center z 0.35 (or 0) (using 0.2)
+
+create animator controller in shooter pack, called enemy
+apply root motion (enabled so it moves)
+
+shooter pack -> create new animation controller
+shooter pack -> material -> create new material
+
+Search for Walk
+Give Rifle Walk to enemy
+	Change controller (in animator) of the enemy to the one just created
+
+Player - end and start (end of gun, something in the middle)
+So we can make a vector for aiming
+
+Vector3.Distance - distance between 2 points
+Quanternion - rotation represented by a vector in degree (along an axis). 4 parameters
+
+
+Create C# Script - name it Enemy
+
+public GameObjec target;
+
+Update
+
+Vector3 temPos = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z);
+//transform.LookAt(target.transform.position);
+Quaternion desiredRotation = Quaternion.LookRotation(temPos - transform.position);
+transform.rotation = Quaternion.Lerp(transform.rotation, desiredRotation, Time.deltaTime);
+
+Attach enemy script to enemy (dragging)
+Create empty object - name target
+Drag target object just created to target of the enemy
+
+// int index = 0; after reaching (using Vector3.Distance to check if it reached), then increases index by 1
+// when u reach a pre-defined distance to the target
+// if it reaches the last target, use mod (so it's not out of boundary of array)
+// public GameObject[] target;
+// index variable, which target it tries to reach
+// Start is called before the first frame update
+
+// index variable, which target it tries to reach
+// Start is called before the first frame update
+// transform.forward vector // first vector
+// Vector3 = (player.transform.position - transform.position).normalized; // second vector
+// check angle with Vector3.Dot // make dot production between 2 vectors
+// magnitude of both multiplied by the cosine of the angle
+// result of Vector3.Dot will be the cosine value
+// if bigger than 0.8 (for example)
+// then new target will be the player
+
+Gets distance between enemy and player by Vector3.Distance
+Also needs to check direction of view - blue vector
+(check if angle is more or lower than 20~30 degrees)
+
+Swat@Rifle Run to animator (name it Running)
+Rifle walk make transition and drag to Running animation
+//Root Transform Rotation and Position Y checked, then click Apply
+Layers - Parameters
+Go to Parameter, plus sign, Bool, name it run
+Click arrow to Rifle run, Conditions, plus sign in order to create new condition
+Has Exit Time (uncheck)
+Firing Rifle Animation, drag and rename it to fire
+Create bool named fire, transition from rifle walk and rifle run to fire
+Time.deltaTime to change fire to true and false. If bigger than 0.2, fire again
+Invoke("LaunchProjectile",2);
+
+player => tag = player
+enemy => tag = enemy
+may remove cylinder from enemy (we don't need to see where they're aiming)
+
+physics ray cast
+
+beingShot = health - 20
+if health < 0, then isDead = true
+player animator "dead" to true as well
+
+vector * Random.Range(min,max) -0.1 1.0
+
+change camera parent.transform.position = camera final.pos
+
+add Box Collider for gun, size 0.2 0.4 maybe, then disable
+when enemy dies, enable Box Collider
+Being_shot:
+	addComponent<BoxCollider>()
+	addComponent<Rigidbody>(); // disable is Kinematic
+	gun.transform.parent = null; // no parent for gun, independent gun (Box Collider on gun. Box Collider is easier)
+
+for ammo supply, download models
+free3D.com, then drag into project
+
+Material
+Change scale
+Material - show explorer
+Duplicate material (brick) - change name
+Change Tiling - X and Y
+Drag new material to wall
+
+# Finish game
+Download model from door from free3D
+Extract material (if can't see anything in wall) - maybe extract texture as well
+
+3D Object, cube, box collider, isTrigger (checked)
+Object should have rigid body or character controller
+Collider.OnTriggerEnter(Collider)
+	when player moves into box, that fuction is called
+	Can put it on cube or player // maybe on player
+
+	void OnTriggerEnter(Collider other)
+		Destroy(other.gameObject);
+
+# Restart game after 10 seconds
+import UnityEngine.SceneManagement;
+
+public static void LoadScene(int sceneBuildIndex, SceneManagement.LoadSceneMode mode = LoadSceneMode.Single);
+public static void LoadScene(string sceneName, SceneManagement.LoadSceneMode mode = LoadSceneMode.Single);
+
+sceneBuildIndex / scene index
+sceneName // name or path
+
+SceneManager.LoadScene("OtherScene", 0);
+Use time.dealtime to check for 10 seconds, or use Invoke
+MonoBehaviour.Invoke
+public void invoke(string methodName, float time);
+
+mixamo.com // download animations like cover
+
+# Detect body hits
+Physics.Raycast
+int layerMask can be used to ignore some layers
+add colliders to different body parts, and assign a different float value to each
