@@ -1,1 +1,3 @@
-# CMPT-742-A3
+# CMPT-742-VR-FPS-Game
+
+## Virtual Reality First-Person Shooter Game
